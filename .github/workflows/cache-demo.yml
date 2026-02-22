@@ -2,36 +2,22 @@ name: Cache Demo
 
 on:
   push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20'
+      - name: prime-cache-054bf26
+        uses: actions/cache@v4
+        id: cache-step
+        with:
+          path: ~/.cache/demo
+          key: cache-054bf26
 
-    - name: Cache Node modules
-      id: prime-cache-054bf26
-      uses: actions/cache@v4
-      with:
-        path: ~/.npm
-        key: cache-054bf26
-
-    - name: Install dependencies
-      run: |
-        # Make sure package.json exists
-        if [ ! -f package.json ]; then
-          echo "{}" > package.json
-        fi
-        npm install
-
-    - name: Show cache result
-      run: echo "Cache hit: ${{ steps.prime-cache-054bf26.outputs.cache-hit }}"
+      - name: Show cache result
+        run: echo "Cache hit: ${{ steps.cache-step.outputs.cache-hit }}"
